@@ -1,4 +1,5 @@
 from langchain_chroma import Chroma
+from langchain_core.vectorstores import InMemoryVectorStore
 from .model_emb import Loader
 from .load_docs import load_docs, split_docs
 
@@ -18,10 +19,9 @@ class VectorStoreManager:
             if not self.embeddings:
                 raise RuntimeError("Failed to initialize the embedding model.")
 
-            vector_store = Chroma(
-                collection_name=self.collection_name,
-                embedding_function=self.embeddings,
-                persist_directory=self.persist_directory,
+            vector_store = InMemoryVectorStore(
+
+                self.embeddings
             )
             print(f"Vector store '{self.collection_name}' initialized successfully.")
             return vector_store
@@ -48,7 +48,7 @@ class VectorStoreManager:
             if not ids:
                 raise RuntimeError("Failed to add document chunks to the vector store.")
             
-            return len(ids)
+            return vector_store
         except Exception as e:
             raise RuntimeError(f"Error during document indexing: {e}")
 

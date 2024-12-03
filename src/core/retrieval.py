@@ -9,7 +9,7 @@ class DocumentRetrievalService:
 
         try:
             self.vector_store_manager = VectorStoreManager()
-            self.vector_store = self.vector_store_manager._initialize_vector_store()
+            self.vector_store = self.vector_store_manager.index_documents()
             if not self.vector_store:
                 raise RuntimeError("Failed to initialize the vector store.")
         except Exception as e:
@@ -17,7 +17,11 @@ class DocumentRetrievalService:
 
     def retrieve_context(self, state: State):
         try:
-            retrieved_docs = self.vector_store.similarity_search(state["question"])
+            query = state["query"]
+            retrieved_docs = self.vector_store.similarity_search(
+                query["query"],
+                filter=lambda doc: doc.metadata.get("section") == query["section"],
+            )
             if not retrieved_docs:
                 raise ValueError("No documents were retrieved.")
             return {"context": retrieved_docs}

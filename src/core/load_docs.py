@@ -21,6 +21,17 @@ def split_docs(docs):
         add_start_index=True,  # track index in original document
     )
     all_splits = text_splitter.split_documents(docs)
+    
+    total_documents = len(all_splits)
+    third = total_documents // 3
+
+    for i, document in enumerate(all_splits):
+        if i < third:
+            document.metadata["section"] = "beginning"
+        elif i < 2 * third:
+            document.metadata["section"] = "middle"
+        else:
+            document.metadata["section"] = "end"
 
     print(f"Split blog post into {len(all_splits)} sub-documents.")
 
