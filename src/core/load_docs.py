@@ -1,5 +1,5 @@
 import yaml
-from langchain_community.document_loaders import JSONLoader
+from langchain_community.document_loaders import JSONLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
@@ -15,12 +15,20 @@ class DocumentProcessor:
 
     def load_docs(self):
         
-        loader_config = self.config["document_loader"]
-        loader = JSONLoader(
-            file_path=loader_config["file_path"],
-            jq_schema=loader_config["jq_schema"],
-            text_content=loader_config["text_content"],
-            json_lines=loader_config["json_lines"],
+        # loader_config = self.config["document_loader"]
+        # loader = JSONLoader(
+        #     file_path=loader_config["file_path"],
+        #     jq_schema=loader_config["jq_schema"],
+        #     text_content=loader_config["text_content"],
+        #     json_lines=loader_config["json_lines"],
+        # )
+        loader = WebBaseLoader(
+            web_paths=("https://lilianweng.github.io/posts/2023-06-23-agent/",),
+            bs_kwargs=dict(
+                parse_only=bs4.SoupStrainer(
+                    class_=("post-content", "post-title", "post-header")
+                )
+            ),
         )
         docs = loader.load()
         return docs

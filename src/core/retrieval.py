@@ -1,3 +1,4 @@
+from langchain_core.tools import tool
 from ..pydentic_models.rag_model import State
 from .indexing import VectorStoreManager
 
@@ -15,13 +16,11 @@ class DocumentRetrievalService:
         except Exception as e:
             raise RuntimeError(f"Error initializing DocumentRetrievalService: {e}")
 
-    def retrieve_context(self, state: State):
-        try:
-            retrieved_docs = self.vector_store.similarity_search(state["question"])
-            if not retrieved_docs:
-                raise ValueError("No documents were retrieved.")
-            return {"context": retrieved_docs}
-        except KeyError as e:
-            raise ValueError(f"Missing required key in state: {e}")
-        except Exception as e:
-            raise RuntimeError(f"Error during document retrieval: {e}")
+    @tool(response_format="content_and_artifact")
+    def retrieve_context(self, query: str):
+        retrieved_docs = self.vector_store.similarity_search(query, k=2)
+        serialized = "\n\n".join(
+            (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
+            for doc in retrieved_docs
+        )
+        return serialized, retrieved_docs

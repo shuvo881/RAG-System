@@ -1,4 +1,4 @@
-from langgraph.graph import START, StateGraph
+from langgraph.graph import START, StateGraph, MessagesState
 from .retrieval import DocumentRetrievalService 
 from .generation import QuestionAnsweringService
 from ..pydentic_models.rag_model import State
@@ -8,7 +8,7 @@ class QuestionAnsweringPipeline:
 
     def __init__(self, model: State):
 
-        self.graph_builder = StateGraph(model)
+        self.graph_builder = StateGraph(MessagesState)
         self._build_pipeline()
         self.graph = self.graph_builder.compile()
 
