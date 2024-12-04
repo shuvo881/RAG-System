@@ -3,10 +3,9 @@
 #   collection_name: "documents"
 
 document_loader:
-  file_path: "data/raw/test.jsonl"
-  jq_schema: ".messages[].content"
+  file_path: "data/raw/"
   text_content: false
-  json_lines: true
+  
 
 openai:
   embedding_model: "text-embedding-3-large"
