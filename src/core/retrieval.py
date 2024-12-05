@@ -1,5 +1,4 @@
 from langchain_core.tools import tool
-from ..pydentic_models.rag_model import State
 from .indexing import VectorStoreManager
 
 
@@ -16,9 +15,9 @@ class DocumentRetrievalService:
         except Exception as e:
             raise RuntimeError(f"Error initializing DocumentRetrievalService: {e}")
 
-    @tool(response_format="content_and_artifact")
-    def retrieve_context(self, query: str):
-        retrieved_docs = self.vector_store.similarity_search(query, k=2)
+    def retrieve(self, query: str):
+        """Retrieve information related to a query."""
+        retrieved_docs = self.vector_store.similarity_search(query, k=3)
         serialized = "\n\n".join(
             (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
             for doc in retrieved_docs

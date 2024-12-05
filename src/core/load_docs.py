@@ -1,4 +1,4 @@
-import yaml
+import yaml, bs4
 from langchain_community.document_loaders import JSONLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -43,6 +43,18 @@ class DocumentProcessor:
         )
         all_splits = text_splitter.split_documents(docs)
         print(f"Split blog post into {len(all_splits)} sub-documents.")
+        
+        total_documents = len(all_splits)
+        third = total_documents // 3
+
+        for i, document in enumerate(all_splits):
+            if i < third:
+                document.metadata["section"] = "beginning"
+            elif i < 2 * third:
+                document.metadata["section"] = "middle"
+            else:
+                document.metadata["section"] = "end"
+        
         return all_splits
 
     def process(self):
