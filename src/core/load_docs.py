@@ -15,13 +15,15 @@ class DocumentProcessor:
             config = yaml.safe_load(file)
         return config
 
-    def load_docs(self):
+    def load_docs(self, single_file_path=None):
 
         loader_config = self.config["document_loader"]
         docs = []
 
         file_path = loader_config["file_path"]
-        if os.path.isfile(file_path):  # Single file
+        if os.path.isfile(file_path) or single_file_path != None:  # Single file
+            if single_file_path != None:
+                file_path = single_file_path
             docs.extend(self._load_single_file(file_path, loader_config))
         elif os.path.isdir(file_path):  # Directory of files
             for filename in os.listdir(file_path):
@@ -29,7 +31,7 @@ class DocumentProcessor:
                 if os.path.isfile(full_path):
                     docs.extend(self._load_single_file(full_path, loader_config))
         else:
-            raise ValueError(f"Invalid path: {file_path}. It must be a file or directory.")
+            raise ValueError(f"Invalid paths: {file_path} or {single_file_path}. It must be a file or directory.")
 
         return docs
 
@@ -84,7 +86,7 @@ class DocumentProcessor:
         print(f"Split documents into {len(all_splits)} sub-documents.")
         return all_splits
 
-    def process(self):
+    def process(self, single_file_path=None):
 
-        docs = self.load_docs()
+        docs = self.load_docs(single_file_path)
         return self.split_docs(docs)

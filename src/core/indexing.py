@@ -31,14 +31,14 @@ class VectorStoreManager:
         except Exception as e:
             raise RuntimeError(f"Error initializing vector store: {e}")
 
-    def index_documents(self):
+    def index_documents(self, single_file_path=None):
         vector_store = self._initialize_vector_store()
         if not vector_store:
             raise RuntimeError("Vector store is not initialized. Call `initialize_vector_store` first.")
 
         try:
             processor = DocumentProcessor()
-            splits = processor.process()
+            splits = processor.process(single_file_path)
             if not splits:
                 raise RuntimeError("Failed to split documents into chunks.")
             
